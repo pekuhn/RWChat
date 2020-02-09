@@ -3,7 +3,23 @@
 <body>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
-  		var socket = io();
+  		var server = "http://localhost:3000";
+    		var io = io(server);
 	</script>
+	<form onsubmit="return sendMessage();">
+		<input id="message" placeholder="Enter message">
+		<input type="submit" value="Send">
+	</form>
+	<script>
+
+	function sendMessage() {
+	var message = document.getElementById("message");
+
+	io.emit("new_message", message.value);
+
+	return false;
+	}
+
+</script>
 </body>
 </html>

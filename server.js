@@ -22,7 +22,11 @@ var io = require("socket.io")(http);
 io.on("connection", function (socket) {
 	// this is socket for each user
 	console.log("User connected", socket.id);
+	// server should listen from each client via it's socket
+	socket.on("new_message", function (data) {
+	console.log("Client says", data);
+	});
 });
 
-// a test
+// add public dir
 app.use(express.static(__dirname + "/public"));
