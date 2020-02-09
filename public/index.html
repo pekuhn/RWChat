@@ -12,14 +12,36 @@
 	</form>
 	<script>
 
-	function sendMessage() {
-	var message = document.getElementById("message");
 
-	io.emit("new_message", message.value);
+		function sendMessage() {
+			//get the message input defined above
+			var message = document.getElementById("message");
+			//generate event
+			io.emit("new_message", message.value);
+			return false;
+		}
 
-	return false;
-	}
-
-</script>
+		// client will listen to events from server
+		io.on("new_message", function (data) {
+			console.log("Server says", data);
+		});
+	</script>
+	<!--list where all messages will be displayed-->
+	<ul id="messages"></ul>
+	<script>
+		// client will listen from server
+		io.on("new_message", function (data) {
+    		// display message
+    		console.log("Server says", data);
+    		// creates a new DOM element for li tag
+    		var li = document.createElement("li");
+    		// show message in li item
+    		//li.innerHTML = data;
+		li.innerHTML = data.message;
+    		// append the message at the end of list
+    		var messages = document.getElementById("messages");
+    		messages.appendChild(li);
+		});
+	</script>
 </body>
 </html>
