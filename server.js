@@ -24,7 +24,7 @@ http.listen(port, function () {
 
 //app.use(app.router);
 // add public dir
-app.use(express.static(__dirname + "/"));
+app.use(express.static(__dirname + "/public"));
 
 // use mysql
 var mysql = require("mysql");
