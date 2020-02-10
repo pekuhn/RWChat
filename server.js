@@ -24,12 +24,13 @@ var mysql = require("mysql");
 // create connection
 var connection = mysql.createConnection({
         host: "localhost",
-        user: "root",
-        password: "some_pw",
+        user: "web_chat",
+        password: "pw",
         database: "web_chat"
 });
 
 connection.connect(function (error) {
+	console.log("ERROR. Did you set up MySQL?", error);
         // show error, if any
 });
 
@@ -50,12 +51,26 @@ io.on("connection", function (socket) {
 		console.log("Client says", data);
 		// save message in database
 		connection.query("INSERT INTO messages (message) VALUES ('" + data + "')", function (error, result) {
+			console.log("db says", error);
 			// server will send message to all connected clients
 			io.emit("new_message", {
-				//id: result.insertId,
+				id: result.insertId,
 				message: data
 			});
 		});
 });
+});
+// add headers
+app.use(function (request, result, next) {
+	result.setHeader("Access-Control-Allow-Origin", "*");
+	next();
+});
+
+// create API for get_message
+app.get("/get_messages", function (request, result) {
+	connection.query("SELECT * FROM messages", function (error, messages) {
+		// return data will be in JSON format
+		result.end(JSON.stringify(messages));
+	});
 });
 
