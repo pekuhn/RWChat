@@ -1,10 +1,17 @@
-console.log("Hello world !");
-
 // use express
 var express = require("express");
 
 // create instance of express
 var app = express();
+
+// create API for get_message
+app.get("/get_messages", function (request, result) {
+                console.log("Erfolg!");
+                connection.query("SELECT * FROM messages", function (error, messages) {
+                        // return data will be in JSON format
+                        result.end(JSON.stringify(messages));
+                });
+        });
 
 // use http with instance of express
 var http = require("http").createServer(app);
@@ -15,8 +22,9 @@ http.listen(port, function () {
 	console.log("Listening to port " + port);
 });
 
+//app.use(app.router);
 // add public dir
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/"));
 
 // use mysql
 var mysql = require("mysql");
@@ -30,7 +38,6 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function (error) {
-	console.log("ERROR. Did you set up MySQL?", error);
         // show error, if any
 });
 
@@ -46,31 +53,24 @@ io.on("connection", function (socket) {
 	//	console.log("Client says", data);
 	//	io.emit("new_message", data);
 	//});
+
 	// server should listen from each client via it's socket
 	socket.on("new_message", function (data) {
 		console.log("Client says", data);
 		// save message in database
 		connection.query("INSERT INTO messages (message) VALUES ('" + data + "')", function (error, result) {
-			console.log("db says", error);
 			// server will send message to all connected clients
 			io.emit("new_message", {
 				id: result.insertId,
 				message: data
 			});
 		});
+	});
 });
-});
+
 // add headers
 app.use(function (request, result, next) {
 	result.setHeader("Access-Control-Allow-Origin", "*");
 	next();
-});
-
-// create API for get_message
-app.get("/get_messages", function (request, result) {
-	connection.query("SELECT * FROM messages", function (error, messages) {
-		// return data will be in JSON format
-		result.end(JSON.stringify(messages));
-	});
 });
 
