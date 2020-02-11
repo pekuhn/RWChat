@@ -2,7 +2,6 @@
 <header><title>Little Web Chat</title></header>
 <body>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="js/jquery.js"></script>
 	<script>
   		var server = "http://localhost:3000";
     		var io = io(server);
@@ -20,7 +19,6 @@
 		var username = "";
 		function setUsername() {
     			username = document.getElementById("username").value; 
-			//$("#username").val();
 			console.log("username set as", username)	
 			// this will prevent the form from submitting	
     			return false;
@@ -45,21 +43,6 @@
 			console.log("Server says", data);
 		});
 
-		function deleteMessage(self) {
-			// get message id
-			var id = self.getAttribute("data-id");
-
-			// send event to server
-			io.emit("delete_message", id);
-		}
-
-		// attach listener on client
-		io.on("delete_message", function (id) {
-			// get node by id
-			var node = document.getElementById("message-" + id);
-			node.innerHTML = "This message has been deleted";
-		});
-
 	</script>
 	<!--list where all messages will be displayed-->
 	<ul id="messages"></ul>
@@ -75,12 +58,8 @@
 			li.id = "message-" + data.id;
 
 			// show message in li item
-			//li.innerHTML = data.message;
 			li.innerHTML = "" + data.username + ": " + data.message;
 
-			// display delete button here too
-			li.innerHTML += "<button data-id='" + data.id + "' onclick='deleteMessage(this);'>Delete</button>";
-    			
 			// append the message at the end of list
     			var messages = document.getElementById("messages");
     			messages.appendChild(li);

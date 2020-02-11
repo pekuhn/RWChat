@@ -21,7 +21,6 @@ http.listen(port, function () {
 	console.log("Listening to port " + port);
 });
 
-//app.use(app.router);
 // add public dir
 app.use(express.static(__dirname + "/public"));
 
@@ -47,12 +46,6 @@ var io = require("socket.io")(http);
 io.on("connection", function (socket) {
 	// this is socket for each user
 	console.log("User connected", socket.id);
-	// server should listen from each client via it's socket (OLD CODE WITHOUT MYSQL)
-	//socket.on("new_message", function (data) {
-	//	console.log("Client says", data);
-	//	io.emit("new_message", data);
-	//});
-	
 	// attach listener to server
 	socket.on("delete_message", function (messageId) {
 		// delete from database
@@ -72,23 +65,5 @@ io.on("connection", function (socket) {
 		});
 	});
 
-	// server should listen from each client via it's socket
-	//socket.on("new_message", function (data) {
-	//	console.log("Client says", data);
-		// save message in database
-	//	connection.query("INSERT INTO messages (message) VALUES ('" + data + "')", function (error, result) {
-			// server will send message to all connected clients
-	//		io.emit("new_message", {
-	//			id: result.insertId,
-	//			message: data
-	//		});
-	//	});
-	//});
-});
-
-// add headers
-app.use(function (request, result, next) {
-	result.setHeader("Access-Control-Allow-Origin", "*");
-	next();
 });
 
