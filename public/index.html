@@ -1,70 +1,57 @@
 <html>
-<header><title>Little Web Chat</title></header>
+	<header><title>Little Web Chat</title></header>
+
 <body>
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-  		var server = "http://localhost:3000";
-    		var io = io(server);
-	</script>
 	<form onsubmit="return setUsername();">
                 <input id="username" placeholder="Enter username">
                 <input type="submit" autocomplete="off" value="Select">
         </form>
-	<form onsubmit="return sendMessage();">
-		<input id="message" placeholder="Enter message">
-		<input type="submit" autocomplete="off" value="Send">
-	</form>
-	<script>
-
+        <form onsubmit="return sendMessage();">
+                <input id="message" placeholder="Enter message">
+                <input type="submit" autocomplete="off" value="Send">
+        </form>
+	<script src="/socket.io/socket.io.js"></script>
+        <script>
+                var server = "http://localhost:3000"
+                var io = io(server)
+	
+		// saving username input in global variable
 		var username = "";
-		function setUsername() {
-    			username = document.getElementById("username").value; 
-			console.log("username set as", username)	
-			// this will prevent the form from submitting	
-    			return false;
-		}
+                function setUsername() {
+                        username = document.getElementById("username").value; 
+                        console.log("username set as", username)        
+                        // this will prevent the form from submitting   
+                        return false;
+                }
+		
+		// saving message
+                function sendMessage() {
+                	var message = document.getElementById("message");
+                	// sending message from client
+                	io.emit("new_message", {
+                        	message: message.value,
+                        	username: username
+                	});
+                	// this will prevent the form from submitting
+                	return false;
+                }
 
-		function sendMessage() {
-		// get message
-		var message = document.getElementById("message");
-
-		// sending message from client
-    		io.emit("new_message", {
-        		message: message.value,
-        		username: username
-    		});
-
-		// this will prevent the form from submitting
-		return false;
-		}
-
-		// client will listen to events from server
-		io.on("new_message", function (data) {
-			console.log("Server says", data);
-		});
-
-	</script>
-	<!--list where all messages will be displayed-->
-	<ul id="messages"></ul>
-	<script>
-		// client will listen from server
-		io.on("new_message", function (data) {
-    			// display message
-    			console.log("Server says", data);
-    			
+                // client will listen to events from server
+                io.on("new_message", function (data) {
+                        console.log("Server says", data)
 			// creates a new DOM element for li tag
-    			var li = document.createElement("li");
-    			
-			li.id = "message-" + data.id;
-
-			// show message in li item
-			li.innerHTML = "" + data.username + ": " + data.message;
-
-			// append the message at the end of list
-    			var messages = document.getElementById("messages");
-    			messages.appendChild(li);
-		});
-	</script>
-
+                       	var li = document.createElement("li")
+			// give the id of data
+                       	li.id = "message-" + data.id
+                       	// show message in li item
+                       	li.innerHTML = "" + data.username + ": " + data.message
+                       	// append the message at the end of list
+               		var messages = document.getElementById("messages")
+                       	messages.appendChild(li)
+               	})
+		
+	//finally, list messages
+        </script>
+	<ul id="messages"></ul>
 </body>
 </html>

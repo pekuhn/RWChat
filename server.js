@@ -1,69 +1,45 @@
-// use express
-var express = require("express");
+// MODULES-------------------------------------
 
-// create instance of express
-var app = express();
+// express
+var express = require("express")
+var app = express()
+app.use(express.static(__dirname + "/public"))
 
-// create API for get_message
-app.get("/get_messages", function (request, result) {
-                connection.query("SELECT * FROM messages", function (error, messages) {
-                        // return data will be in JSON format
-                        result.end(JSON.stringify(messages));
-                });
-        });
+// http
+var http = require("http").createServer(app)
+// start http server
+var port = 3000
+http.listen(port, function() {
+	console.log("Listening to port " + port)
+})
 
-// use http with instance of express
-var http = require("http").createServer(app);
-
-// start the server
-var port = 3000;
-http.listen(port, function () {
-	console.log("Listening to port " + port);
-});
-
-// add public dir
-app.use(express.static(__dirname + "/public"));
-
-// use mysql
-var mysql = require("mysql");
-
-// create connection
+//mysql
+var mysql = require("mysql")
+// define connection (create db using pupulate.sql in root)
 var connection = mysql.createConnection({
-        host: "localhost",
-        user: "web_chat",
-        password: "pw",
-        database: "web_chat"
-});
-
+	host: "localhost",
+	user: "web_chat",
+	password: "pw",
+	database: "web_chat"
+})
+// connect
 connection.connect(function (error) {
-        // show error, if any
+	console.log("MySQL " + error)
 });
 
-// create socket instance with http
-var io = require("socket.io")(http);
+// socket.io
+var io = require("socket.io")(http)
 
-// add listener for new connection
+// CONNECTION EVENT----------------------------
 io.on("connection", function (socket) {
-	// this is socket for each user
-	console.log("User connected", socket.id);
-	// attach listener to server
-	socket.on("delete_message", function (messageId) {
-		// delete from database
-		connection.query("DELETE FROM messages WHERE id = '" + messageId + "'", function (error, result) {
-			// send event to all users
-			io.emit("delete_message", messageId);
-		});
-	});
 
-	// server should listen from each client via it's socket
+	console.log("New_user with socket_id: ", socket.id)
+	// listen to messages
 	socket.on("new_message", function (data) {
-		console.log("new message", data)
-    		// save message in database
 		connection.query("INSERT INTO messages(username, message) VALUES('" + data.username + "', '" + data.message + "')", function (error, result) {
-			data.id = result.insertId;
-			io.emit("new_message", data);
-		});
-	});
-
-});
-
+        		data.id = result.insertId
+        		io.emit("new_message", data)
+        	})
+	})
+	
+})

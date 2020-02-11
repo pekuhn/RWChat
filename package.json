@@ -1,17 +1,16 @@
 {
-  "name": "rw_chat",
+  "name": "web_chat",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "simple chat with emotion detection",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pekuhn/RWChat.git"
   },
-  "author": "",
+  "author": "Peter Kuhn",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/pekuhn/RWChat/issues"
@@ -21,6 +20,7 @@
     "express": "^4.17.1",
     "http": "0.0.0",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.2",
     "socket.io": "^2.3.0"
   }
 }
