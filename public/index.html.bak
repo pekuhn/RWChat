@@ -7,21 +7,21 @@
   		var server = "http://localhost:3000";
     		var io = io(server);
 	</script>
-	<form onsubmit="return setUsername();">
-                <input id="username" placeholder="Enter username">
-                <input type="submit" autocomplete="off" value="Select">
-        </form>
+	<form method="/public/POST" onsubmit="return setUsername();">
+		<input type="text" autocomplete="off" id="username" placeholder="Enter username">
+		<input type="submit" value="Select">
+	</form>
 	<form onsubmit="return sendMessage();">
 		<input id="message" placeholder="Enter message">
-		<input type="submit" autocomplete="off" value="Send">
+		<input type="submit" value="Send">
 	</form>
 	<script>
 
 		var username = "";
+
 		function setUsername() {
-    			username = document.getElementById("username").value; 
-			//$("#username").val();
-			console.log("username set as", username)	
+    			username = $("#username").val();
+			console.log("username set")	
 			// this will prevent the form from submitting	
     			return false;
 		}
@@ -87,5 +87,36 @@
 		});
 	</script>
 
+	        <script>
+                $.ajax({
+                        url: server + "/get_messages",
+                        method: "GET",
+                        success: function (response) {
+                                        console.log(response);
+
+                                        var messages = document.getElementById("messages");
+
+                                        // parse JSON to javascript object
+                                        var data = JSON.parse(response);
+                                        for (var a = 0; a < data.length; a++) {
+                                                // creates new DOM element
+                                                var li = document.createElement("li");
+
+                                                // give it unique id
+                                                li.id = "message-" + data[a].id;
+
+                                                // add message content as HTML
+                                                //li.innerHTML = data[a].message;
+                                                li.innerHTML = "" + data[a].username + ": " + data[a].message;
+
+                                                // add delete button
+                                                li.innerHTML += "<button data-id='" + data[a].id + "' onclick='deleteMessage(this);'>Delete</button>";
+
+                                                // append at the end of list
+                                                messages.appendChild(li);
+                                        }
+                                }
+                });
+        </script>
 </body>
 </html>

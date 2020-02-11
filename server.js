@@ -6,7 +6,6 @@ var app = express();
 
 // create API for get_message
 app.get("/get_messages", function (request, result) {
-                console.log("Erfolg!");
                 connection.query("SELECT * FROM messages", function (error, messages) {
                         // return data will be in JSON format
                         result.end(JSON.stringify(messages));
@@ -63,27 +62,28 @@ io.on("connection", function (socket) {
 		});
 	});
 
-	// attach listener to server
-	socket.on("delete_message", function (messageId) {
-		// delete from database
-		connection.query("DELETE FROM messages WHERE id = '" + messageId + "'", function (error, result) {
-			// send event to all users
-			io.emit("delete_message", messageId);
+	// server should listen from each client via it's socket
+	socket.on("new_message", function (data) {
+		console.log("new message", data)
+    		// save message in database
+		connection.query("INSERT INTO messages(username, message) VALUES('" + data.username + "', '" + data.message + "')", function (error, result) {
+			data.id = result.insertId;
+			io.emit("new_message", data);
 		});
 	});
 
 	// server should listen from each client via it's socket
-	socket.on("new_message", function (data) {
-		console.log("Client says", data);
+	//socket.on("new_message", function (data) {
+	//	console.log("Client says", data);
 		// save message in database
-		connection.query("INSERT INTO messages (message) VALUES ('" + data + "')", function (error, result) {
+	//	connection.query("INSERT INTO messages (message) VALUES ('" + data + "')", function (error, result) {
 			// server will send message to all connected clients
-			io.emit("new_message", {
-				id: result.insertId,
-				message: data
-			});
-		});
-	});
+	//		io.emit("new_message", {
+	//			id: result.insertId,
+	//			message: data
+	//		});
+	//	});
+	//});
 });
 
 // add headers
