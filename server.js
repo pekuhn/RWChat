@@ -53,6 +53,24 @@ io.on("connection", function (socket) {
 	//	console.log("Client says", data);
 	//	io.emit("new_message", data);
 	//});
+	
+	// attach listener to server
+	socket.on("delete_message", function (messageId) {
+		// delete from database
+		connection.query("DELETE FROM messages WHERE id = '" + messageId + "'", function (error, result) {
+			// send event to all users
+			io.emit("delete_message", messageId);
+		});
+	});
+
+	// attach listener to server
+	socket.on("delete_message", function (messageId) {
+		// delete from database
+		connection.query("DELETE FROM messages WHERE id = '" + messageId + "'", function (error, result) {
+			// send event to all users
+			io.emit("delete_message", messageId);
+		});
+	});
 
 	// server should listen from each client via it's socket
 	socket.on("new_message", function (data) {

@@ -25,22 +25,45 @@
 		io.on("new_message", function (data) {
 			console.log("Server says", data);
 		});
+
+		function deleteMessage(self) {
+			// get message id
+			var id = self.getAttribute("data-id");
+
+			// send event to server
+			io.emit("delete_message", id);
+		}
+
+		// attach listener on client
+		io.on("delete_message", function (id) {
+			// get node by id
+			var node = document.getElementById("message-" + id);
+			node.innerHTML = "This message has been deleted";
+		});
+
 	</script>
 	<!--list where all messages will be displayed-->
 	<ul id="messages"></ul>
 	<script>
 		// client will listen from server
 		io.on("new_message", function (data) {
-    		// display message
-    		console.log("Server says", data);
-    		// creates a new DOM element for li tag
-    		var li = document.createElement("li");
-    		// show message in li item
-    		//li.innerHTML = data;
-		li.innerHTML = data.message;
-    		// append the message at the end of list
-    		var messages = document.getElementById("messages");
-    		messages.appendChild(li);
+    			// display message
+    			console.log("Server says", data);
+    			
+			// creates a new DOM element for li tag
+    			var li = document.createElement("li");
+    			
+			li.id = "message-" + data.id;
+
+			// show message in li item
+			li.innerHTML = data.message;
+
+			// display delete button here too
+			li.innerHTML += "<button data-id='" + data.id + "' onclick='deleteMessage(this);'>Delete</button>";
+    			
+			// append the message at the end of list
+    			var messages = document.getElementById("messages");
+    			messages.appendChild(li);
 		});
 	</script>
 	<script src="js/jquery.js">	
@@ -57,9 +80,15 @@
 					for (var a = 0; a < data.length; a++) {
 						// creates new DOM element
 						var li = document.createElement("li");
-	
+
+						// give it unique id
+                                                li.id = "message-" + data[a].id;
+
 						// add message content as HTML
 						li.innerHTML = data[a].message;
+						
+						// add delete button
+                                                li.innerHTML += "<button data-id='" + data[a].id + "' onclick='deleteMessage(this);'>Delete</button>";
 
 						// append at the end of list
 						messages.appendChild(li);
