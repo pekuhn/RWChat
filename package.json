@@ -17,10 +17,15 @@
   },
   "homepage": "https://github.com/pekuhn/RWChat#readme",
   "dependencies": {
+    "axios": "^0.19.2",
+    "curl-request": "^1.1.1",
     "express": "^4.17.1",
     "http": "0.0.0",
+    "http.request": "^1.1.0",
     "mysql": "^2.18.1",
+    "node-libcurl": "^2.0.3",
     "nodemon": "^2.0.2",
+    "request": "^2.88.2",
     "socket.io": "^2.3.0"
   }
 }
