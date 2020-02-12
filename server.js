@@ -13,19 +13,21 @@ http.listen(port, function() {
 	console.log("Listening to port " + port)
 })
 
+//Using socket.io a db is technically not necessary. I decided to remove it. 
+//You can delete the comment marks here and below so that the chat saves everthing in mysql...
 //mysql
-var mysql = require("mysql")
+//var mysql = require("mysql")
 // define connection (create db using pupulate.sql in root)
-var connection = mysql.createConnection({
-	host: "localhost",
-	user: "web_chat",
-	password: "pw",
-	database: "web_chat"
-})
+//var connection = mysql.createConnection({
+//	host: "localhost",
+//	user: "web_chat",
+//	password: "pw",
+//	database: "web_chat"
+//})
 // connect to mysql
-connection.connect(function (error) {
-	console.log("MySQL " + error)
-});
+//connection.connect(function (error) {
+//	console.log("MySQL " + error)
+//});
 
 // socket.io
 var io = require("socket.io")(http)
@@ -56,12 +58,24 @@ io.on("connection", function (socket) {
  			console.error('error:', error); // Print the error if one occurred
   			console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
   			console.log('body:', body); // Print the HTML for the Google homepage.
-		}).auth('apikey', api_key)
+			
+			var symp = JSON.parse(body)
+			//data.sympathy = symp.document_tone //tones.score
+			//console.log("sympathy: ", symp.document_tone.tones[0].score)
+			data.symp = symp.document_tone.tones[0].score
 
-		connection.query("INSERT INTO messages(username, message) VALUES('" + data.username + "', '" + data.message + "')", function (error, result) {
-        		data.id = result.insertId
-        		io.emit("new_message", data)
-        	})
+			io.emit("new_message", data)
+
+		}).auth('apikey', api_key)
+		
+		
+//		Redundant MySQL Query, see above
+//		connection.query("INSERT INTO messages(username, message) VALUES('" + data.username + "', '" + data.message + "')", function (error, result) {
+//        		console.log("mysql error ", error)
+//			data.id = result.insertId
+//        		io.emit("new_message", data)
+//        	})
+
 
 	})
 
