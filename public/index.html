@@ -39,19 +39,30 @@
                 // client will listen to events from server
                 io.on("new_message", function (data) {
 
-			var emoji = ":|"
-			if ( data.symp < 0.35 ) {
-				emoji = ":("
-			} else if ( data.symp > 0.65 ) {
+			// turn sympathy value into emoji
+			var emoji = ""
+			// value is set no none if an error occurs
+			if ( data.tone === "polite" ) {
 				emoji = ":)"
+			} else if ( data.tone === "sad" ) {
+				emoji = ":("
+			} else if ( data.tone === "frustrated" ) {
+				emoji = ":("
+			} else if ( data.tone === "impolite" ) {
+				emoji = ":("
+			} else if ( data.tone === "excited" ) {
+                                emoji = ":)"
+			} else {
+				emoji = "(?)"
 			}
+
                         console.log("Server says", data)
 			// creates a new DOM element for li tag
                        	var li = document.createElement("li")
 			// give the id of data
                        	li.id = "message-" + data.id
                        	// show message in li item
-			li.innerHTML = "<b>" + data.username +" " + emoji + "</b> : " + data.message
+			li.innerHTML = "<b>" + data.username +" " + emoji + "</b>   " + data.message
                        	// append the message at the end of list
                		var messages = document.getElementById("messages")
                        	messages.appendChild(li)
@@ -59,6 +70,6 @@
 		
 	//finally, list messages
         </script>
-	<ul id="messages"></ul>
+	<center><ul id="messages"></ul></center>
 </body>
 </html>

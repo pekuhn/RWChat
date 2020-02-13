@@ -4,7 +4,7 @@ CREATE TABLE messages (
 	id MEDIUMINT NOT NULL AUTO_INCREMENT,
 	message TEXT NOT NULL,
 	username CHAR(100),
-	valence CHAR(100),
+	tone CHAR(100),
 	PRIMARY KEY (id)
 );
 CREATE USER 'web_chat'@'localhost';

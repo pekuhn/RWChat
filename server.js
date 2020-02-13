@@ -32,12 +32,20 @@ http.listen(port, function() {
 // socket.io
 var io = require("socket.io")(http)
 
-//request
-const request = require('request')
-
-// PREPARING IBM TONE ANALYSER API-------------
+// IBM WATSON ToneAnlayser
 var api_key = "XWWz1X73jSyN_5tJYMESd7g70En6zSdcwz6xuQdSAQoc"
-var api_url = "https://api.eu-de.tone-analyzer.watson.cloud.ibm.com/instances/f9784a0d-41f5-4895-89ea-76a56492d2be/v3/tone?version=2017-09-21&sentences=false&text="
+var api_url = "https://api.eu-de.tone-analyzer.watson.cloud.ibm.com/instances/f9784a0d-41f5-4895-89ea-76a56492d2be"
+
+const ToneAnalyzerV3 = require('ibm-watson/tone-analyzer/v3');
+const { IamAuthenticator } = require('ibm-watson/auth');
+
+const toneAnalyzer = new ToneAnalyzerV3({
+  version: '2017-09-21',
+  authenticator: new IamAuthenticator({
+    apikey: api_key,
+  }),
+  url: api_url,
+});
 
 // CONNECTION EVENT----------------------------
 io.on("connection", function (socket) {
@@ -47,34 +55,33 @@ io.on("connection", function (socket) {
 	socket.on("new_message", function (data) {
 		console.log("The message is: ", data.message)
 
-		//turn message into url
-		var message_url = encodeURIComponent(data.message)
-		//prepare full api url
-		var url = api_url + message_url
+		//turn message into JSON for Tone Analyser
+		const toneChat = { utterances: [ { text: data.message, }, ], };
 
-		console.log("api url" + url)
+		toneAnalyzer.toneChat(toneChat)
+  		.then(utteranceAnalyses => {
+    			console.log(JSON.stringify(utteranceAnalyses, null, 2));
 
-		request.get( url , function (error, response, body) {
- 			console.error('error:', error); // Print the error if one occurred
-  			console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  			console.log('body:', body); // Print the HTML for the Google homepage.
-			
-			var symp = JSON.parse(body)
-			//data.sympathy = symp.document_tone //tones.score
-			//console.log("sympathy: ", symp.document_tone.tones[0].score)
-			data.symp = symp.document_tone.tones[0].score
-
+			if ( utteranceAnalyses.result.utterances_tone[0].tones[0].length == 0 ) {
+				data.tone = "none"
+				console.log("Watson doesnt have a clue...")
+			} else {
+				data.tone = utteranceAnalyses.result.utterances_tone[0].tones[0].tone_id
+				console.log("Watson thinks the tone is ", data.tone)
+			}
 			io.emit("new_message", data)
 
-		}).auth('apikey', api_key)
-		
-		
-//		Redundant MySQL Query, see above
-//		connection.query("INSERT INTO messages(username, message) VALUES('" + data.username + "', '" + data.message + "')", function (error, result) {
-//        		console.log("mysql error ", error)
-//			data.id = result.insertId
-//        		io.emit("new_message", data)
-//        	})
+//              	Redundant MySQL Query, see above
+//              	connection.query("INSERT INTO messages(username, message, tone) VALUES('" + data.username + "', '" + data.message + "', '" + data.tone '")", function (error, result) {
+//                      	console.log("mysql error ", error)
+//                      	data.id = result.insertId
+//                      	io.emit("new_message", data)
+//			})
+
+  		})
+  		.catch(err => {
+    			console.log('error:', err);
+ 		});
 
 
 	})
