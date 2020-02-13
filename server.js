@@ -61,13 +61,14 @@ io.on("connection", function (socket) {
 		toneAnalyzer.toneChat(toneChat)
   		.then(utteranceAnalyses => {
     			console.log(JSON.stringify(utteranceAnalyses, null, 2));
-
-			if ( utteranceAnalyses.result.utterances_tone[0].tones[0].length == 0 ) {
+			
+			//check whether ToneAnalyser was able to interpred the message
+			if ( typeof utteranceAnalyses.result.utterances_tone[0].tones[0] === "undefined" ) {
 				data.tone = "none"
-				console.log("Watson doesnt have a clue...")
+                                console.log("Watson doesnt have a clue...")
 			} else {
 				data.tone = utteranceAnalyses.result.utterances_tone[0].tones[0].tone_id
-				console.log("Watson thinks the tone is ", data.tone)
+                                console.log("Watson thinks the tone is ", data.tone)
 			}
 			io.emit("new_message", data)
 

@@ -1,15 +1,62 @@
 <html>
-	<header><title>Little Web Chat</title></header>
+<header><title>Little Web Chat</title></header>
+
+<style type="text/css">
+
+ul li{
+	margin-top:20px;
+	margin-bottom:20px;
+}
+
+header {
+  	background-color: #2F4F4F;
+  	padding: 5px;
+  	color: white;
+}
+
+body {
+	margin:0;
+}
+
+
+h1 {
+	font-family: Helvetica; 
+	font-size: 40px; 
+	font-style: normal; 
+	font-variant: normal; 
+	font-weight: 400; 
+	line-height: 30.8px; 
+	margin-left:30;
+}
+
+p {
+	font-family: Helvetica;
+        font-size: 15px; 
+        font-style: normal; 
+        font-variant: normal;
+        font-weight: 400; 
+        line-height: 30.8px;
+        margin-left:30;
+}
+
+</style>
 
 <body>
+	<header>
+	<h1>Little Web Chat</h1>
+	<p>using Watson ToneAnalyser. By Peter Kuhn</p>
+	<div align="right">
 	<form onsubmit="return setUsername();">
                 <input id="username" placeholder="Enter username">
                 <input type="submit" autocomplete="off" value="Select">
         </form>
         <form onsubmit="return sendMessage();">
                 <input id="message" placeholder="Enter message">
-                <input type="submit" autocomplete="off" value="Send">
+                <input type="submit" autocomplete="off" value="Send  ">
         </form>
+	</div>
+	</header>
+
 	<script src="/socket.io/socket.io.js"></script>
         <script>
                 var server = "http://localhost:3000"
@@ -39,9 +86,10 @@
                 // client will listen to events from server
                 io.on("new_message", function (data) {
 
+			console.log("I received: ", data.tone)
 			// turn sympathy value into emoji
 			var emoji = ""
-			// value is set no none if an error occurs
+			// value is set to none if an error occurs
 			if ( data.tone === "polite" ) {
 				emoji = ":)"
 			} else if ( data.tone === "sad" ) {
@@ -70,6 +118,6 @@
 		
 	//finally, list messages
         </script>
-	<center><ul id="messages"></ul></center>
+	<center><ul style="list-style: none;" id="messages"></ul></center>
 </body>
 </html>
