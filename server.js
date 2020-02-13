@@ -60,7 +60,9 @@ io.on("connection", function (socket) {
 
 		toneAnalyzer.toneChat(toneChat)
   		.then(utteranceAnalyses => {
-    			console.log(JSON.stringify(utteranceAnalyses, null, 2));
+
+			//to see the ToneAnalyzers output in the console uncomment this line
+    			//console.log(JSON.stringify(utteranceAnalyses, null, 2));
 			
 			//check whether ToneAnalyser was able to interpred the message
 			if ( typeof utteranceAnalyses.result.utterances_tone[0].tones[0] === "undefined" ) {
