@@ -7,11 +7,8 @@ app.use(express.static(__dirname + "/public"))
 
 // http
 var http = require("http").createServer(app)
-// start http server
-var port = 3000
-http.listen(port, function() {
-	console.log("Listening to port " + port)
-})
+// start http server on port 3000
+http.listen(process.env.PORT || 3000)
 
 //Using socket.io a db is technically not necessary. I decided to remove it. 
 //You can delete the comment marks here and below so that the chat saves everthing in mysql...
